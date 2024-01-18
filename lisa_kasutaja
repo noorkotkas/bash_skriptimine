@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Kontrolli, kas skript käivitati juurkasutajana
+if [ "$(id -u)" -ne 0 ]; then
+  echo "Skripti käivitamiseks on vajalik juurkasutaja õigus!" 
+  exit 1
+fi
+
+# Kontrolli, kas anti parameeter (kasutajanimi)
+if [ -z "$1" ]; then
+  echo "Kasutage skripti järgmiselt: $0 <kasutajanimi>"
+  exit 1
+fi
+
+kasutajanimi=$1
+kodukataloog="/home/$kasutajanimi"
+
+# Kontrolli, kas kasutaja juba eksisteerib
+if id "$kasutajanimi" &>/dev/null; then
+  echo "Kasutaja $kasutajanimi juba eksisteerib!"
+  exit 1
+fi
+
+# Loome kasutaja ilma paroolita
+useradd -m -d "$kodukataloog" -s /bin/bash "$kasutajanimi"
+
+# Loome vajaliku kodukataloogi struktuuri (peidetud failid)
+mkdir -p "$kodukataloog"/.{config,local}/
+
+# Andke vajalikud õigused kodukataloogile
+chown -R "$kasutajanimi":"$kasutajanimi" "$kodukataloog"
+
+echo "Kasutaja $kasutajanimi loodud ilma paroolita ja kodukataloogiga $kodukataloog."
