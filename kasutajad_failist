@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# Kontrolli, kas skript käivitati juurkasutajana
+if [ "$(id -u)" -ne 0 ]; then
+  echo "Skripti käivitamiseks on vajalik juurkasutaja õigus!" 
+  exit 1
+fi
+
+# Kontrolli, kas anti parameeter (failinimi)
+if [ -z "$1" ]; then
+  echo "Kasutage skripti järgmiselt: $0 <failinimi>"
+  exit 1
+fi
+
+failinimi=$1
+
+# Kontrolli, kas antud fail eksisteerib
+if [ ! -f "$failinimi" ]; then
+  echo "Faili $failinimi ei leitud!"
+  exit 1
+fi
+
+# Loeme failist iga rea ja käivitame lisa_kasutaja skripti
+while IFS= read -r kasutajanimi; do
+  ./lisa_kasutaja "$kasutajanimi"
+done < "$failinimi"
+
+echo "Kasutajad lisatud vastavalt failist $failinimi."
