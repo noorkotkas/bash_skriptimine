@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# Kontrolli, kas skript käivitati juurkasutajana
+if [ "$(id -u)" -ne 0 ]; then
+  echo "Skripti käivitamiseks on vajalik juurkasutaja õigus!" 
+  exit 1
+fi
+
+# Kontrolli, kas anti parameeter (kasutajate fail)
+if [ -z "$1" ]; then
+  echo "Kasutage skripti järgmiselt: $0 <kasutajate_fail>"
+  exit 1
+fi
+
+kasutajate_fail=$1
+logifail="kasutajad_paroolidega.log"
+
+# Kontrolli, kas antud fail eksisteerib
+if [ ! -f "$kasutajate_fail" ]; then
+  echo "Kasutajate faili ei leitud!"
+  exit 1
+fi
+
+# Loo logifail, kui seda veel ei eksisteeri
+touch "$logifail"
+
+# Loe iga rida kasutajate failist
+while IFS= read -r kasutajanimi; do
+  # Genereeri juhuslik parool
+  parool=$(pwgen -1)
+
+  # Lisa kasutaja süsteemile koos parooliga
+  useradd -m -p "$(openssl passwd -1 "$parool")" "$kasutajanimi"
+  
+  # Salvesta kasutaja ja parool logifaili
+  echo "$kasutajanimi:$parool" >> "$logifail"
+done < "$kasutajate_fail"
+
+echo "Kasutajad lisatud vastavalt failile $kasutajate_fail. Logi leitav failis $logifail."
