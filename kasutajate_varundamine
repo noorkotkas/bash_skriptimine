@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Määra varukataloogi nimi
+backup_dir="/home/home_bcp"
+
+# Kontrolli, kas varukataloog on olemas, kui mitte, siis loo see
+if [ ! -d "$backup_dir" ]; then
+    mkdir -p "$backup_dir"
+fi
+
+# Hangi kuupäeva formaat
+backup_date=$(date +"%d.%m.%Y")
+
+# Varunda iga kasutaja kodukataloog
+for user_home in /home/*; do
+    if [ -d "$user_home" ]; then
+        # Hangi kasutajanimi
+        username=$(basename "$user_home")
+
+        # Tee varundatava kasutaja kodukataloogi tar arhiiv
+        tar -czf "$backup_dir/$username.$backup_date.tar.gz" -C /home "$username"
+        
+        echo "Kasutaja $username kodukataloogi varundamine on lõpetatud."
+    fi
+done
+
+echo "Kõik kasutajate kodukataloogid on varundatud ja pakitud."
