@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Proovime paigaldada Apache teenust
+echo "Alustame Apache teenuse paigaldamist..."
+sudo apt update
+sudo apt install -y apache2
+
+# Näita Apache teenuse staatust
+echo "Apache teenuse staatuse kontroll:"
+if systemctl status apache2 &> /dev/null; then
+    systemctl status apache2
+else
+    echo "Apache teenust ei leitud."
+fi
