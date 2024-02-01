@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Värskenda paketihaldurit
+sudo apt update
+
+# Paigalda MySQL-server ja vajalikud abipaketid
+sudo apt install -y default-mysql-server
+
+# Kontrolli, kas MySQL-serveri paigaldus oli edukas
+if [ $? -eq 0 ]; then
+    echo "MySQL-server installed successfully."
+else
+    echo "Failed to install MySQL-server."
+    exit 1
+fi
+
+# Käivita MySQL-serveri paigaldusjärgne turvaskript (kui see on saadaval)
+if command -v mysql_secure_installation &> /dev/null; then
+    sudo mysql_secure_installation
+else
+    echo "mysql_secure_installation not found, skipping security setup."
+fi
+
+# Kontrolli MySQL-serveri teenuse staatust
+if systemctl status mysql &> /dev/null; then
+    echo "MySQL-server is running."
+else
+    echo "MySQL-server service could not be found."
+fi
