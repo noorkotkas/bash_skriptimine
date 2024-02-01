@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Värskenda paketihaldurit
+sudo apt update
+
+# Paigalda PHP ja vajalikud abipaketid
+sudo apt install -y php php-cli php-fpm php-mysql
+
+# Lisa vajadusel konfiguratsioonifailidesse muudatused
+# Näiteks võib muuta php.ini faili vastavalt vajadusele
+sudo sed -i 's/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/' /etc/php/7.4/fpm/php.ini
+
+# Taaskäivita PHP teenus
+sudo systemctl restart php7.4-fpm
